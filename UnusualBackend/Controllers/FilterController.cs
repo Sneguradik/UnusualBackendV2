@@ -9,7 +9,7 @@ namespace UnusualBackend.Controllers
 {
     [Route("[controller]")]
     [ApiController]
-    public class FilterController(TradeRepository tradeRepository) : ControllerBase
+    public class FilterController(ITradeRepository tradeRepository) : ControllerBase
     {
         [HttpGet("sort")]
         public async Task<List<TradeStatsDto>> GetData( CancellationToken token)
