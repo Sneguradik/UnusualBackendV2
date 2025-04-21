@@ -16,8 +16,8 @@ public class TradeStatsDto
     public decimal AvgOrdersPerContra { get; set; }
     public decimal AvgOrdersPerAsset { get; set; }
 
-    public TimeSpan? MinDealTime { get; set; }
-    public TimeSpan? MaxDealTime { get; set; }
+    public string? MinDealTime { get; set; }
+    public string? MaxDealTime { get; set; }
     public double DealTimeDelta { get; set; }
     public double AvgTimeBtwOrdersSecs { get; set; }
 
@@ -37,5 +37,5 @@ public class TradeStatsDto
 
     public decimal Cost { get; set; }
     
-    public DateTime TradeDate { get; set; } 
+    public string TradeDate { get; set; } 
 }
