@@ -21,7 +21,7 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
         (case when (nyse_close_price is NULL) or (nyse_close_price = 0) then close_price 
         when (nyse_close_price is NULL) or (nyse_close_price = 0) then eve_lastdeal_price else nyse_close_price end) as close_price
         from "ARH_TradeResult" 
-        where trade_date {$"between ('{dto.StartDate:yy-MM-dd}') and ('{dto.EndDate:yy-MM-dd}')"}
+        where trade_date between ('{dto.StartDate:yy-MM-dd}') and ('{dto.EndDate:yy-MM-dd}')
         and trade_mode in ('Режим основных торгов') 
         and section_code in ('EQF', 'EBOND', 'EQCIS', 'EQR')),
         
@@ -71,7 +71,7 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
         left join close_prices cprs on cprs.trade_date = tr.trade_date and cprs.asset_code = tr.asset_code 
         
         
-            where tr.trade_date {$"between ('{dto.StartDate:yy-MM-dd}') and ('{dto.EndDate:yy-MM-dd}')"}
+            where tr.trade_date between ('{dto.StartDate:yy-MM-dd}') and ('{dto.EndDate:yy-MM-dd}')
             and trade_mode in ('Режим основных торгов')
             and currency in ('{dto.Currency}')
             and client_code not in ({string.Join(',', dto.ExcludedCodes.Select(c=>$"'{c}'"))})
