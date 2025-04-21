@@ -1,7 +1,6 @@
 ﻿using System.Text;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
-using Npgsql;
 using UnusualBackend.Dto;
 using UnusualBackend.Models;
 
@@ -16,13 +15,13 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
 {
     private string BuildQuery(GetTradeResultDto dto)
     {
-        return @"
+        return $"""
         
         with close_prices as (SELECT trade_date, asset_code,
         (case when (nyse_close_price is NULL) or (nyse_close_price = 0) then close_price 
         when (nyse_close_price is NULL) or (nyse_close_price = 0) then eve_lastdeal_price else nyse_close_price end) as close_price
-        from ""ARH_TradeResult"" 
-        where trade_date between ('@startDate') and ('@endDate')
+        from "ARH_TradeResult" 
+        where trade_date between ('{dto.StartDate:yyyy-MM-dd}') and ('{dto.EndDate:yyyy-MM-dd}')
         and trade_mode in ('Режим основных торгов') 
         and section_code in ('EQF', 'EBOND', 'EQCIS', 'EQR')),
         
@@ -64,30 +63,28 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
         sum(case 
         when currency != 'RUB' and price >= 10 and is_extra_liqudity = '1' then 0.0001 * abs(trade_qty)
         when currency != 'RUB' and price < 10 and is_extra_liqudity = '1' then 0.0012 * abs(trade_qty)
-        when currency = 'RUB' and is_extra_liqudity = '1' then 0.1 * abs(trade_qty) else 0 end) as ""Cost""
+        when currency = 'RUB' and is_extra_liqudity = '1' then 0.1 * abs(trade_qty) else 0 end) as "Cost"
         
         
         
-        from ""vw_ARH_TradeBS"" tr
+        from "vw_ARH_TradeBS" tr
         left join close_prices cprs on cprs.trade_date = tr.trade_date and cprs.asset_code = tr.asset_code 
         
         
-            where tr.trade_date between ('@startDate') and ('@endDate')
+            where tr.trade_date between ('{dto.StartDate:yyyy-MM-dd}') and ('{dto.EndDate:yyyy-MM-dd}')
             and trade_mode in ('Режим основных торгов')
-            and currency in ('@currency')
-            and client_code not in (@excludeCodes)
+            and currency in ('{dto.Currency}')
+            and client_code not in ({string.Join(',', dto.ExcludedCodes.Select(c=>$"'{c}'"))})
         
             group by tr.trade_date, currency, trade_member_name, account, client_code, client_legal_code)
         
             select * from raw_data
-        ";
+        """.ToString();
     }
 
     public IQueryable<TradeStatsDto> GetTradeResults(GetTradeResultDto dto) => dbContext
         .Database
-        .SqlQueryRaw<TradeStatsDto>(BuildQuery(dto), 
-            new NpgsqlParameter("@startDate", dto.StartDate), 
-            new NpgsqlParameter("@endDate", dto.EndDate), 
-            new NpgsqlParameter("@currency", dto.Currency), 
-            new NpgsqlParameter("@excludeCodes", string.Join(',', dto.ExcludedCodes.Select(c=>$"'{c}'"))));
+        .SqlQueryRaw<TradeStatsDto>(BuildQuery(dto));
+
+    
 }
