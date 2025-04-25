@@ -7,17 +7,34 @@ using UnusualBackend.Services;
 
 namespace UnusualBackend.Controllers
 {
-    [Route("[controller]")]
+    [Route("/")]
     [ApiController]
-    public class FilterController(ITradeRepository tradeRepository) : ControllerBase
+    public class FilterController(ITradeRepository tradeRepository, IDefaultFilterService defaultFilterService, IFilterService filterService, ILogger<FilterController> logger) : ControllerBase
     {
-        [HttpGet("sort")]
-        public async Task<List<TradeStatsDto>> GetData( CancellationToken token)
+        
+        [HttpPost("filter")]
+        public async Task<ActionResult<TradeStatAnalyzed[]>> GetData([FromBody] GetTradeResultDto dto, CancellationToken token)
         {
-            var dto = new GetTradeResultDto(DateTime.Parse("2025-04-01").ToUniversalTime(), DateTime.Parse("2025-04-02").ToUniversalTime(), "RUB", [
-                "S02","S04","R0105","R0105_02","SD198","AF205","28T6S","3LLA1","AL223","AL223_002","4V430","PO256","TS267","alrbm","rencm","TS287","derzm_MM","derzm_SEP_MM","KU234_003","skbmm", "mfbim"]);
-            return await tradeRepository.GetTradeResults(dto).ToListAsync(cancellationToken: token);
+            if (dto.StartDate > dto.EndDate) return Problem(title: "Invalid data", 
+                statusCode: StatusCodes.Status400BadRequest, 
+                detail: "Start date cannot be earlier than end date", 
+                instance: HttpContext.Request.Path);
+            logger
+                .LogInformation($"Requested from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
+            var tradeStats = await tradeRepository
+                .GetTradeResults(dto).ToListAsync(cancellationToken: token);
+            logger
+                .LogInformation($"Received from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
+            var res = filterService.ApplyFilters(tradeStats, dto.Filters);
+            logger
+                .LogInformation($"Filtered from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
+            return res.ToArray();
         }
+
+        [HttpGet("default_filters/{currency}")]
+        public List<Filter> GetDefaultFilters(string currency) => defaultFilterService[currency];
+        
+        
     }
 }
 

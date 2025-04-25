@@ -1,4 +1,7 @@
-﻿namespace UnusualBackend.Models;
+﻿using System.Text.Json.Serialization;
+using Newtonsoft.Json;
+
+namespace UnusualBackend.Models;
 
 public enum FilterCondition
 {
@@ -7,6 +10,7 @@ public enum FilterCondition
     Greater,
     LessOrEquals,
     GreaterOrEquals,
+    NotEquals,
 }
 
 public enum FilterType
@@ -14,8 +18,6 @@ public enum FilterType
     And,
     Or
 }
-
-
 
 public class Filter
 {
@@ -26,6 +28,4 @@ public class Filter
     public FilterType Type { get; set; }
     public bool UseTrigger  { get; set; } = true;
     public bool Active { get; set; } = true;
-    
-    
 }
