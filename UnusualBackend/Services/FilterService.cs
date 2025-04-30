@@ -21,6 +21,8 @@ public class FilterService : IFilterService
         var active = filters.Where(f => f.Active).ToList();
         var andFilters = active.Where(f => f.Type == FilterType.And).ToList();
         var orFilters = active.Where(f => f.Type == FilterType.Or).ToList();
+        
+        var andTriggers = andFilters.Count(f => f.UseTrigger);
 
         
         var combined = andFilters
@@ -32,7 +34,7 @@ public class FilterService : IFilterService
 
         var result = await trades
             .AsNoTracking()
-            .Select(x => new TradeStatAnalyzed(x))
+            .Select(x => new TradeStatAnalyzed(x){TotalScore = andTriggers})
             .ToListAsync(token);
 
         
