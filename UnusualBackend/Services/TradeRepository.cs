@@ -63,7 +63,7 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
         sum(case 
         when currency != 'RUB' and price >= 10 and is_extra_liqudity = '1' then 0.0001 * abs(trade_qty)
         when currency != 'RUB' and price < 10 and is_extra_liqudity = '1' then 0.0012 * abs(trade_qty)
-        when currency = 'RUB' and is_extra_liqudity = '1' then 0.1 * abs(trade_qty) else 0 end) as "Cost"
+        when currency = 'RUB' and is_extra_liqudity = '1' then 0.1 * abs(trade_qty) else 0 end) as "cost"
         
         
         
@@ -85,6 +85,4 @@ public class TradeRepository(TradeDbContext dbContext) : ITradeRepository
     public IQueryable<TradeStatsDto> GetTradeResults(GetTradeResultDto dto) => dbContext
         .Database
         .SqlQueryRaw<TradeStatsDto>(BuildQuery(dto));
-
-    
 }

@@ -21,14 +21,14 @@ namespace UnusualBackend.Controllers
                 instance: HttpContext.Request.Path);
             logger
                 .LogInformation($"Requested from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
-            var tradeStats = await tradeRepository
-                .GetTradeResults(dto).ToListAsync(cancellationToken: token);
+            var tradeStats = await filterService.ApplyFilters(tradeRepository
+                .GetTradeResults(dto) , dto.Filters, token: token);
             logger
                 .LogInformation($"Received from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
-            var res = filterService.ApplyFilters(tradeStats, dto.Filters);
+            
             logger
                 .LogInformation($"Filtered from {dto.StartDate:yyyy-MM-dd} to {dto.EndDate:yyyy-MM-dd}. Currency: {dto.Currency}.");
-            return res.ToArray();
+            return tradeStats.ToArray();
         }
 
         [HttpGet("default_filters/{currency}")]
