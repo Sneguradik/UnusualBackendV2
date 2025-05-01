@@ -1,10 +1,9 @@
 ﻿using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Protocols;
-using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 using UnusualBackend.Utils;
 
-namespace UnusualBackend.Services;
+namespace UnusualBackend.Services.TradeFiltering;
 
 public interface IFilterService
 {

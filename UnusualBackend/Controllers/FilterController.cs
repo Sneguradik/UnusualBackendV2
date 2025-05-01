@@ -3,16 +3,18 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using UnusualBackend.Dto;
 using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 using UnusualBackend.Services;
+using UnusualBackend.Services.TradeFiltering;
 
 namespace UnusualBackend.Controllers
 {
-    [Route("/")]
+    [Route("/filter")]
     [ApiController]
     public class FilterController(ITradeRepository tradeRepository, IDefaultFilterService defaultFilterService, IFilterService filterService, ILogger<FilterController> logger) : ControllerBase
     {
         
-        [HttpPost("filter")]
+        [HttpPost]
         public async Task<ActionResult<TradeStatAnalyzed[]>> GetData([FromBody] GetTradeResultDto dto, CancellationToken token)
         {
             if (dto.StartDate > dto.EndDate) return Problem(title: "Invalid data", 

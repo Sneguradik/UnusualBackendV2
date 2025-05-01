@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 
-namespace UnusualBackend.Services;
+namespace UnusualBackend.Services.TradeFiltering;
 
 public class TradeDbContext(DbContextOptions<TradeDbContext> options) : DbContext(options)
 {

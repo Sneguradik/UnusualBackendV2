@@ -1,5 +1,6 @@
 ﻿using System.Linq.Expressions;
 using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 
 namespace UnusualBackend.Utils;
 

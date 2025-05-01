@@ -1,4 +1,4 @@
-﻿namespace UnusualBackend.Models;
+﻿namespace UnusualBackend.Models.TradeFiltering;
 
 public class TradeStatAnalyzed : TradeStatsDto
 {

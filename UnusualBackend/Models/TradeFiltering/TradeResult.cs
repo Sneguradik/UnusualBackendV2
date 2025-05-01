@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace UnusualBackend.Models;
+namespace UnusualBackend.Models.TradeFiltering;
 
 public class TradeResult
 {

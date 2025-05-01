@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using UnusualBackend.Services;
+using UnusualBackend.Services.TradeFiltering;
 
 var builder = WebApplication.CreateBuilder(args);
 

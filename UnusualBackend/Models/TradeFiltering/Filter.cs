@@ -1,7 +1,4 @@
-﻿using System.Text.Json.Serialization;
-using Newtonsoft.Json;
-
-namespace UnusualBackend.Models;
+﻿namespace UnusualBackend.Models.TradeFiltering;
 
 public enum FilterCondition
 {

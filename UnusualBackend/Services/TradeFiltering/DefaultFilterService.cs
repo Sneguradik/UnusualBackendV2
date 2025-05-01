@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
-using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 
-namespace UnusualBackend.Services;
+namespace UnusualBackend.Services.TradeFiltering;
 
 public interface IDefaultFilterService
 {

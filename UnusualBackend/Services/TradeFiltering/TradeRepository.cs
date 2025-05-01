@@ -1,10 +1,8 @@
-﻿using System.Text;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Internal;
+﻿using Microsoft.EntityFrameworkCore;
 using UnusualBackend.Dto;
-using UnusualBackend.Models;
+using UnusualBackend.Models.TradeFiltering;
 
-namespace UnusualBackend.Services;
+namespace UnusualBackend.Services.TradeFiltering;
 
 public interface ITradeRepository
 {
