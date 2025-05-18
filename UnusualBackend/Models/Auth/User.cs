@@ -4,5 +4,5 @@ namespace UnusualBackend.Models.Auth;
 
 public class User : IdentityUser<int>
 {
-    public List<RefreshToken> RefreshTokens { get; set; } = [];
+    public RefreshToken? RefreshToken { get; set; } = new();
 }

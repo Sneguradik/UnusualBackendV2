@@ -89,7 +89,7 @@ public class JwtService(IOptions<JwtConfig> jwtConfig) : IJwtService
         var token = new JwtSecurityToken(
             issuer: _jwtConfig.Issuer,
             audience: _jwtConfig.Audience,
-            expires: DateTime.Now.AddMinutes(_jwtConfig.TokenValidity),
+            expires: DateTime.Now.AddSeconds(_jwtConfig.TokenValidityInSeconds),
             claims: claims,
             signingCredentials: CreateSigningCredentials()
         );
