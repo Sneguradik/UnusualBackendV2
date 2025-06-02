@@ -6,6 +6,7 @@ using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pag
 using UnusualBackend.Dto.Auth;
 using UnusualBackend.Models.Auth;
 using UnusualBackend.Services.Auth;
+using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
 namespace UnusualBackend.Controllers
 {
@@ -31,6 +32,8 @@ namespace UnusualBackend.Controllers
             await userManager.UpdateAsync(user);
             var roles = await userManager.GetRolesAsync(user);
             
+            logger.LogInformation("User - {UserEmail} has got tokens", user.Email);
+            
             return new TokenPair(jwtService.GenerateToken(user, roles.ToArray()), user.RefreshToken.Token);
 
         }
@@ -41,7 +44,7 @@ namespace UnusualBackend.Controllers
             if (!ModelState.IsValid) return Problem(title: "Authorization error",
                 detail: ModelState.ToString(), statusCode: StatusCodes.Status400BadRequest);
             
-            logger.LogInformation($"{dto.Email} requested login");
+            logger.LogInformation("User - {DtoEmail} requested login", dto.Email);
 
             var user = await userManager.FindByEmailAsync(dto.Email);
 
@@ -49,11 +52,15 @@ namespace UnusualBackend.Controllers
                 "No user found",
                 statusCode: StatusCodes.Status404NotFound,
                 title: "Authorization error");
+            
+            logger.LogInformation("User - {UserEmail} found", user.Email);
 
             if (!await userManager.CheckPasswordAsync(user, dto.Password)) return Problem(
                 "Wrong password",
                 statusCode: StatusCodes.Status401Unauthorized,
                 title: "Authorization error");
+            
+            logger.LogInformation("User - {UserEmail} authorized", user.Email);
             
             var tokenPair = await AuthenticateUser(user, token);
             return new AuthDto(user.Id, user.UserName!, user.Email!, tokenPair.Token, tokenPair.RefreshToken);
@@ -75,6 +82,8 @@ namespace UnusualBackend.Controllers
             
             var user = new User() {Email = dto.Email, UserName = dto.UserName};
             var result = await userManager.CreateAsync(user, dto.Password);
+            
+            logger.LogInformation("User - {UserEmail} created", user.Email);
 
             if (!result.Succeeded) return Problem(
                 string.Join("\n", result.Errors.Select(e => e.Description)),
@@ -112,6 +121,11 @@ namespace UnusualBackend.Controllers
             
             var claims = jwtService.GetPrincipalFromExpiredToken(tokenPair.Token);
             var jwtToken = jwtService.GenerateToken(claims!.Claims);
+
+            logger
+                .LogInformation("User - {First} refreshed tokens", claims.Claims
+                    .First(x=>x.Type == JwtRegisteredClaimNames.Email));
+            
             return new TokenPair(jwtToken, user.RefreshToken.Token);
         }
 
@@ -130,6 +144,9 @@ namespace UnusualBackend.Controllers
             
             user.RefreshToken = null;
             await userManager.UpdateAsync(user);
+            
+            logger.LogInformation("User - {UserEmail} revoked", user.Email);
+            
             return Ok("Token revoked");
         }
         
